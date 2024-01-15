@@ -33,7 +33,7 @@ class SideBarFrame(ctk.CTkFrame):
                                         image=master.home_image, anchor="w", command=self.TasksFrameEvent)
         self.btnTasksFrame.grid(row=4, column=0, sticky="nsew")
 
-        self.selectFrameByName("TodayFrame")
+        self.selectFrameByName("TasksFrame")
 
     def ChangeThemeEvent(self):
         if self.master.appearanceMode == "light":

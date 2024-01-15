@@ -1,5 +1,6 @@
-from typing import Any, Optional, Tuple, Union
 import customtkinter as ctk
+from typing import Any, Optional, Tuple, Union
+from .TaskManager import TaskManager
 
 class TasksFrame(ctk.CTkFrame):
     def __init__(self, master: Any, width: int = 200, height: int = 200, corner_radius: int | str | None = None, border_width: int | str | None = None, bg_color: str | Tuple[str, str] = "transparent", fg_color: str | Tuple[str, str] | None = None, border_color: str | Tuple[str, str] | None = None, background_corner_colors: Tuple[str | Tuple[str, str]] | None = None, overwrite_preferred_drawing_method: str | None = None, **kwargs):
@@ -8,5 +9,28 @@ class TasksFrame(ctk.CTkFrame):
         self.master = master
         self._fg_color = fg_color
 
-        self.label = ctk.CTkLabel(self, text="Tasks", fg_color=("gray75", "gray25"), corner_radius=10)
-        self.label.pack()
+        self.frame = ctk.CTkScrollableFrame(self, label_text="Tasks", width=500, height=300)
+        self.frame.pack(side=ctk.TOP, fill=ctk.BOTH, expand=True)
+
+        self.loadTasks()
+
+        self.entryAddTask = ctk.CTkEntry(self, placeholder_text="Add Task")
+        self.entryAddTask.bind("<Return>", self.AddTaskEvent)
+        self.entryAddTask.pack(side=ctk.BOTTOM, fill=ctk.X,padx=10, pady=10)
+
+    def AddTaskEvent(self, event):
+        taskName = "" if self.entryAddTask.get() == "" else self.entryAddTask.get()
+        if taskName != "":
+            TaskManager.addTask(taskName)
+            self.loadTasks()
+            self.frame.update()
+            self.entryAddTask.delete(0, ctk.END)
+    
+    def loadTasks(self):
+        err, tasks = TaskManager.loadTasks()
+        if err is not None:
+            print(err)
+        for i, taskName in enumerate(tasks.keys()):
+            ctk.CTkCheckBox(self.frame, text="").grid(row=i,column=0, padx=5, pady=5, sticky=ctk.NSEW)
+            ctk.CTkButton(self.frame, text=taskName, fg_color=("gray75", "gray25"), corner_radius=10).grid(
+                row=i, column=1, padx=5, pady=5, sticky=ctk.NSEW)

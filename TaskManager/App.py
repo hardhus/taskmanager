@@ -7,6 +7,7 @@ from .Today import TodayFrame
 from .Important import ImportantFrame
 from .Scheduled import ScheduledFrame
 from .Tasks import TasksFrame
+from .TaskManager import TaskManager
 
 ctk.set_appearance_mode("System")
 ctk.set_default_color_theme("green")
@@ -19,6 +20,8 @@ class App(ctk.CTk):
         self.geometry("900x600-8-1")
 
         self.appearanceMode = AppearanceModeTracker.get_mode()
+
+        TaskManager.Ready()
 
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
