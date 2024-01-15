@@ -8,14 +8,14 @@ class TodayFrame(ctk.CTkFrame):
         self.master = master
         self._fg_color = fg_color
 
-        self.label = ctk.CTkLabel(self, text="Today Frame", fg_color=("gray75", "gray25"), corner_radius=10)
-        self.label.pack()
+        self.frame = ctk.CTkScrollableFrame(self, label_text="Today Frame", width=500, height=300)
+        self.frame.pack(side=ctk.TOP, fill=ctk.BOTH, expand=True)
 
         self.entryAddTask = ctk.CTkEntry(self, placeholder_text="Add Task")
         self.entryAddTask.bind("<Return>", self.AddTaskEvent)
-        self.entryAddTask.pack(side=ctk.BOTTOM, fill="both", padx=10, pady=10)
+        self.entryAddTask.pack(side=ctk.BOTTOM, fill=ctk.X,padx=10, pady=10)
 
     def AddTaskEvent(self, event):
         taskName = "Task" if self.entryAddTask.get() == "" else self.entryAddTask.get()
-        ctk.CTkButton(self, text=taskName, fg_color=("gray75", "gray25"), corner_radius=10).pack(padx=5, pady=5)
+        ctk.CTkButton(self.frame, text=taskName, fg_color=("gray75", "gray25"), corner_radius=10).pack(padx=5, pady=5)
         self.entryAddTask.delete(0, ctk.END)

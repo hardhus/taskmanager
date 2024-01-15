@@ -7,6 +7,12 @@ class SideBarFrame(ctk.CTkFrame):
 
         self.master = master
 
+        self.btnChangeTheme = ctk.CTkButton(self, corner_radius=0, height=40, border_spacing=10,
+                                        text="Light Mode" if self.master.appearanceMode == 1 else "Dark Mode",
+                                        fg_color="transparent", text_color=("gray10", "gray90"), hover_color=("gray70", "gray30"),
+                                        image=master.mode_image, anchor="w", command=self.ChangeThemeEvent)
+        self.btnChangeTheme.grid(row=0, column=0, sticky="nsew", pady=(0, 25))
+
         self.btnTodayFrame = ctk.CTkButton(self, corner_radius=0, height=40, border_spacing=10, text="Today",
                                         fg_color="transparent", text_color=("gray10", "gray90"), hover_color=("gray70", "gray30"),
                                         image=master.home_image, anchor="w", command=self.TodayFrameEvent)
@@ -22,17 +28,22 @@ class SideBarFrame(ctk.CTkFrame):
                                         image=master.add_user_image, anchor="w", command=self.ScheduledFrameEvent)
         self.btnScheduledFrame.grid(row=3, column=0, sticky="nsew")
 
-        self.switchModeVar = ctk.StringVar(value="on")
-        self.switchMode = ctk.CTkSwitch(self, command=self.switchModeEvent, onvalue="on", offvalue="off", text="Dark Mode", variable=self.switchModeVar, progress_color="transparent")
-        self.switchMode.grid(row=4, column=0, sticky="nsew", padx=10, pady=430)
+        self.btnTasksFrame = ctk.CTkButton(self, corner_radius=0, height=40, border_spacing=10, text="Tasks",
+                                        fg_color="transparent", text_color=("gray10", "gray90"), hover_color=("gray70", "gray30"),
+                                        image=master.home_image, anchor="w", command=self.TasksFrameEvent)
+        self.btnTasksFrame.grid(row=4, column=0, sticky="nsew")
 
         self.selectFrameByName("TodayFrame")
 
-    def switchModeEvent(self):
-        if self.switchMode.get() == "on":
+    def ChangeThemeEvent(self):
+        if self.master.appearanceMode == "light":
+            self.master.appearanceMode = "dark"
             ctk.set_appearance_mode("dark")
+            self.btnChangeTheme.configure(text="Light Mode")
         else:
+            self.master.appearanceMode = "light"
             ctk.set_appearance_mode("light")
+            self.btnChangeTheme.configure(text="Dark Mode")
 
     def TodayFrameEvent(self):
         self.selectFrameByName("TodayFrame")
@@ -43,10 +54,14 @@ class SideBarFrame(ctk.CTkFrame):
     def ScheduledFrameEvent(self):
         self.selectFrameByName("ScheduledFrame")
 
+    def TasksFrameEvent(self):
+        self.selectFrameByName("TasksFrame")
+
     def selectFrameByName(self, frameName):
         self.btnTodayFrame.configure(fg_color=("gray75", "gray25") if frameName == "TodayFrame" else "transparent")
         self.btnImportantFrame.configure(fg_color=("gray75", "gray25") if frameName == "ImportantFrame" else "transparent")
         self.btnScheduledFrame.configure(fg_color=("gray75", "gray25") if frameName == "ScheduledFrame" else "transparent")
+        self.btnTasksFrame.configure(fg_color=("gray75", "gray25") if frameName == "TasksFrame" else "transparent")
 
         if frameName == "TodayFrame":
             self.master.todayFrame.grid(row=0, column=1, sticky="nsew")
@@ -60,3 +75,7 @@ class SideBarFrame(ctk.CTkFrame):
             self.master.scheduledFrame.grid(row=0, column=1, sticky="nsew")
         else:
             self.master.scheduledFrame.grid_forget()
+        if frameName == "TasksFrame":
+            self.master.tasksFrame.grid(row=0, column=1, sticky="nsew")
+        else:
+            self.master.tasksFrame.grid_forget()
