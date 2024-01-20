@@ -25,15 +25,15 @@ class TaskManager:
         cls.checkJsonFile()
         tasks = [asdict(i) for i in cls.loadTasks()]
 
-        task = cls.recursiveGetTask(path, tasks)
+        task = cls.__recursiveGetTask(path, tasks)
         return task
 
     @classmethod
-    def recursiveGetTask(cls, path: list[int], tasks: list):
+    def __recursiveGetTask(cls, path: list[int], tasks: list):
         if len(path) == 1:
             cls.printTask(Task(**tasks[path[0]]))
             return tasks[path[0]]
-        cls.recursiveGetTask(path[1:], tasks[path[0]]["subtasks"])
+        cls.__recursiveGetTask(path[1:], tasks[path[0]]["subtasks"])
 
     @classmethod
     def postTask(cls, data: Task, path: list[int] = []):
@@ -41,18 +41,18 @@ class TaskManager:
         with open(cls.path, "r") as file:
             tasks = json.load(file)
         
-        tasks["tasks"] = cls.recursivePostTask(data, path, tasks["tasks"])
+        tasks["tasks"] = cls.__recursivePostTask(data, path, tasks["tasks"])
         with open(cls.path, "w") as file:
             json.dump(tasks, file, indent=cls.indent)
 
     @classmethod
-    def recursivePostTask(cls, data: Task, path: list[int], current_level):
+    def __recursivePostTask(cls, data: Task, path: list[int], current_level):
         if len(path) == 0:
             current_level.append(asdict(data))
             return current_level
         if current_level[path[0]]["subtasks"] is None:
             current_level[path[0]]["subtasks"] = []
-        current_level[path[0]]["subtasks"] = cls.recursivePostTask(data, path[1:], current_level[path[0]]["subtasks"])
+        current_level[path[0]]["subtasks"] = cls.__recursivePostTask(data, path[1:], current_level[path[0]]["subtasks"])
         return current_level
 
     @classmethod
@@ -61,18 +61,18 @@ class TaskManager:
         with open(cls.path, "r") as file:
             tasks = json.load(file)
         
-        tasks["tasks"] = cls.recursiveUpdateTask(data, path, tasks["tasks"])
+        tasks["tasks"] = cls.__recursiveUpdateTask(data, path, tasks["tasks"])
         with open(cls.path, "w") as file:
             json.dump(tasks, file, indent=cls.indent)
 
     @classmethod
-    def recursiveUpdateTask(cls, data: Task, path: list[int], current_level):
+    def __recursiveUpdateTask(cls, data: Task, path: list[int], current_level):
         if len(path) == 1:
             if current_level[path[0]]["subtasks"] is not None:
                 data.subtasks = current_level[path[0]]["subtasks"] 
                 current_level[path[0]] = asdict(data)
             return current_level
-        current_level[path[0]]["subtasks"] = cls.recursiveUpdateTask(data, path[1:], current_level[path[0]]["subtasks"])
+        current_level[path[0]]["subtasks"] = cls.__recursiveUpdateTask(data, path[1:], current_level[path[0]]["subtasks"])
         return current_level
 
     @classmethod
@@ -81,19 +81,19 @@ class TaskManager:
         with open(cls.path, "r") as file:
             tasks = json.load(file)
 
-        tasks["tasks"] = cls.recursiveDeleteTask(path, tasks["tasks"])
+        tasks["tasks"] = cls.__recursiveDeleteTask(path, tasks["tasks"])
         with open(cls.path, "w") as file:
             json.dump(tasks, file, indent=cls.indent)
 
     @classmethod
-    def recursiveDeleteTask(cls, path: list[int], current_level):
+    def __recursiveDeleteTask(cls, path: list[int], current_level):
         if len(path) == 1:
             del current_level[path[0]]
             if len(current_level) == 0:
                 return None
             else:
                 return current_level
-        current_level[path[0]]["subtasks"] = cls.recursiveDeleteTask(path[1:], current_level[path[0]]["subtasks"])
+        current_level[path[0]]["subtasks"] = cls.__recursiveDeleteTask(path[1:], current_level[path[0]]["subtasks"])
         return current_level
 
     @classmethod
@@ -135,7 +135,7 @@ class TaskManager:
 if __name__ == "__main__":
     TaskManager.Ready(4)
 
-    TaskManager.deleteTask([0, 0])
+    TaskManager.getTask([0, 0])
 
     print("*********************************************************************")
     for i in TaskManager.loadTasks():
